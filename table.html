@@ -1,0 +1,36 @@
+<form style="padding:4rem 1rem 1rem">
+
+  <div class="form-group">
+    <label for="searchText">Find article</label><br />
+    <input placeholder="enter the title of the article" ng-model="textTitle" type="text" id="searchText">         
+  </div>
+  
+  <div class="d-flex justify-content-between">
+
+      <button class="btn btn-primary btn-sm" ng-click="createItem()">New article</button>
+  </div>
+
+</form>
+
+<div class="container-fluid" >
+  <table class="table">
+      <tbody>
+          <tr>
+              <th>Title</th>
+              <th>Article</th>
+              <th>Избранные</th> 
+              <th></th> 
+          </tr>
+          <tr ng-repeat="item in items | filter : textTitle">
+              <td>{{item.title}}</td>
+              <td>{{item.body}}</td>
+              <td><input type="checkbox" ng-model="item.selected" ng-click="update(item)" /></td>
+              <td>
+                <button ng-click="editItem(item)" type="button" class="btn btn-outline-primary mr-auto btn-sm">Edit</button>
+                <button ng-click="delete(item)" type="button" class="btn btn-outline-danger mr-auto btn-sm">Delete</button>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+</div>
+

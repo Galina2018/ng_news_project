@@ -12,44 +12,21 @@
 </head>
 <body ng-controller="defaultCtrl">     
 
-    <nav class="navbar navbar-light bg-light fixed-top">
+    <nav class="navbar navbar-light fixed-top" style="background-color: #bbcef0;">
         <a class="navbar-brand">App news</a>
-        <span class="label label-info">Количество статей с пометкой "Избранные" 
-            {{(items | filter: {selected : true}).length}}
-        </span>
-        <form>
-          <button ng-click="refresh()" type="button" class="btn btn-outline-success ml-auto">Refresh</button>
-          <button ng-click="reset()" type="button" class="btn btn-outline-danger mr-auto">Clear</button>
-        </form>
+        <button type="button" class="btn btn-primary">
+          Количество статей с пометкой "Избранные"
+          <span class="badge badge-light"> 
+              {{(items | filter: {selected : true}).length}}
+          </span>
+        </button>
+       
     </nav>
 
-    <form style="padding:4rem 1rem 1rem">
-
-        <div class="form-group">
-          <label for="searchText">Find article</label><br />
-          <input placeholder="tenter the title of the article" ng-model="searchText" type="text" id="searchText" >         
-        </div>
-
-      </form>
-
-      <div class="container-fluid" ng-hide="hideNews">
-        <table class="table">
-            <tbody>
-                <tr>
-                    <th>Title</th>
-                    <th>Article</th>
-                    <th>Избранные</th> 
-                </tr>
-                <tr ng-repeat="item in items | filter : selectArticle">
-                    <td>{{item.title}}</td>
-                    <td>{{item.body}}</td>
-                    <td><input type="checkbox" ng-model="item.selected" /></td>
-
-                </tr>
-            </tbody>
-        </table>
-      </div>
-
+    <ng-include src="'table.html'" ng-show="currentView == 'table'"></ng-include>
+    <ng-include src="'edit.html'" ng-show="currentView == 'edit'"></ng-include>
       
+
+
 </body>
 </html>

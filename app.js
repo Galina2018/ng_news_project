@@ -1,25 +1,73 @@
-angular.module("App", []).controller("defaultCtrl", function ($scope, $http) {
-  $scope.hideNews = true;
+angular
+  .module("App", [])
+  .constant("baseUrl", "http://localhost:3000/allnews/")
+  .controller("defaultCtrl", function ($scope, $http, baseUrl) {
+    $scope.currentView = "table";
 
-  $scope.refresh = function () {
-    $http
-      .get("http://jsonplaceholder.typicode.com/posts")
-      .success(function (response) {
-        $scope.items = response;
+    $scope.refresh = function () {
+      $http.get(baseUrl).success(function (response) {
+        $scope.items = response.allnews;
         $scope.hideNews = false;
       });
-  };
+    };
 
-  $scope.reset = function () {
-    $scope.hideNews = true;
-  };
+    $scope.create = function (item) {
+      $http
+        .post("http://localhost:3000/addnews", item)
+        .success(function (item) {
+          $scope.items.push(item);
+          $scope.currentView = "table";
+          $scope.refresh();
+        });
+    };
 
-  $scope.searchText = "";
+    $scope.update = function (item) {
+      $http({
+        url: "http://localhost:3000/editnews",
+        method: "PUT",
+        data: item,
+      }).success(function (modifiedItem) {
+        for (var i = 0; i < $scope.items.length; i++) {
+          if ($scope.items[i].id == modifiedItem.id) {
+            $scope.items[i] = modifiedItem;
+            break;
+          }
+        }
+        $scope.currentView = "table";
+        $scope.refresh();
+      });
+    };
 
-  $scope.selectArticle = function (item) {
-    if ($scope.searchText !== "") {
-      var rez = item.title == $scope.searchText ? true : false;
-    } else rez = true;
-    return rez;
-  };
-});
+    $scope.delete = function (item) {
+      $http({
+        method: "DELETE",
+        url: "http://localhost:3000/deletenews/" + item.id,
+      }).success(function () {
+        $scope.items.splice($scope.items.indexOf(item), 1);
+      });
+    };
+
+    $scope.createItem = function () {
+      $scope.currentItem = {};
+      $scope.currentView = "edit";
+    };
+
+    $scope.editItem = function (item) {
+      $scope.currentItem = angular.copy(item);
+      $scope.currentView = "edit";
+    };
+
+    $scope.createOrEditItem = function (item) {
+      if (angular.isDefined(item.id)) {
+        $scope.update(item);
+      } else {
+        $scope.create(item);
+      }
+    };
+
+    $scope.cancelEdit = function () {
+      $scope.currentView = "table";
+    };
+
+    $scope.refresh();
+  });
