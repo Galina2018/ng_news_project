@@ -12,10 +12,11 @@ angular
     };
 
     $scope.create = function (item) {
+      $scope.refresh();
       $http
-        .post("http://localhost:3000/addnews", item)
+        .post("http://localhost:3000/addnews", { item: item, unshift: true })
         .success(function (item) {
-          $scope.items.push(item);
+          $scope.items.unshift(item);
           $scope.currentView = "table";
           $scope.refresh();
         });
