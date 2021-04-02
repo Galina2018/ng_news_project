@@ -19,13 +19,17 @@
               <th>Title</th>
               <th>Article</th>
               <th>Избранные</th> 
-              <th></th> 
+              <th><input type="checkbox" ng-model="item.selected" ng-click="updateSelect(item)" /></th> 
+              <th></th>
+              <th></th>
           </tr>
           <tr ng-repeat="item in items | filter : textTitle">
               <td>{{item.title}}</td>
               <td>{{item.body}}</td>
+              <td></td>
               <td><input type="checkbox" ng-model="item.selected" ng-click="update(item)" /></td>
-              <td>
+              <td></td>
+              <td>                
                 <button ng-click="editItem(item)" type="button" class="btn btn-outline-primary mr-auto btn-sm">Edit</button>
                 <button ng-click="delete(item)" type="button" class="btn btn-outline-danger mr-auto btn-sm">Delete</button>
               </td>

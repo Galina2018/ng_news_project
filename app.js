@@ -3,6 +3,9 @@ angular
   .constant("baseUrl", "http://localhost:3000/allnews/")
   .controller("defaultCtrl", function ($scope, $http, baseUrl) {
     $scope.currentView = "table";
+    $scope.styleNav = {
+      backgroundColor: "#bbcef0",
+    };
 
     $scope.refresh = function () {
       $http.get(baseUrl).success(function (response) {
@@ -68,6 +71,16 @@ angular
 
     $scope.cancelEdit = function () {
       $scope.currentView = "table";
+    };
+
+    $scope.updateSelect = function (item) {
+      if (item.selected == true) {
+        $http
+          .get("http://localhost:3000/allnews/?selected=true")
+          .success(function (response) {
+            $scope.items = response.allnews;
+          });
+      } else $scope.refresh();
     };
 
     $scope.refresh();
