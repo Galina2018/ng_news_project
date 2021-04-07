@@ -1,7 +1,24 @@
 angular
-  .module("App", [])
+  .module("App", ["ngRoute", "ngStorage"])
   .constant("baseUrl", "http://localhost:3000/allnews/")
-  .controller("defaultCtrl", function ($scope, $http, baseUrl) {
+  .config(function ($routeProvider) {
+    $routeProvider
+      .when("/", {
+        templateUrl: "./login.html",
+        controller: "loginCtrl",
+      })
+      .when("/posts", {
+        templateUrl: "posts.html",
+        controller: "postsCtrl",
+      })
+      .otherwise({
+        template: "<h5>Не найдено</h5>",
+      });
+  })
+
+  .controller("defaultCtrl", function ($scope) {})
+
+  .controller("postsCtrl", function ($scope, $http, baseUrl) {
     $scope.currentView = "table";
     $scope.styleNav = {
       backgroundColor: "#bbcef0",
@@ -84,4 +101,74 @@ angular
     };
 
     $scope.refresh();
+  })
+
+  .controller("loginCtrl", function ($scope, $location, $localStorage) {
+    $scope.addNewUser = function (userDetails, isvalid) {
+      if (isvalid) {
+        $scope.message = userDetails.name + " " + userDetails.email;
+      } else {
+        $scope.message = "Error";
+        $scope.showError = true;
+      }
+    };
+
+    $scope.getError = function (error) {
+      if (angular.isDefined(error)) {
+        if (error.required) {
+          return "Поле не должно быть пустым";
+        }
+        if (error.email) {
+          return "Введите правильный email";
+        }
+      }
+    };
+
+    $scope.$storage = $localStorage.$default({
+      users: [
+        {
+          name: "admin",
+          email: "admin@admin",
+        },
+      ],
+    });
+
+    $scope.submit = function (user) {
+      $scope.findUser = false;
+
+      for (item in $localStorage.users) {
+        if (
+          JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+        ) {
+          $scope.findUser = true;
+          break;
+        }
+      }
+
+      if ($scope.findUser) {
+        $location.path("/posts");
+      } else {
+        alert("Пользователь не найден. Зарегистрируйтесь.");
+      }
+    };
+
+    $scope.auth = function (user) {
+      $scope.findUser = false;
+
+      for (item in $localStorage.users) {
+        if (
+          JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+        ) {
+          $scope.findUser = true;
+          break;
+        }
+      }
+
+      if ($scope.findUser) {
+        alert("Такой пользователь уже есть. Осуществите вход.");
+      } else {
+        $localStorage.users.push(user);
+        $location.path("/posts");
+      }
+    };
   });
