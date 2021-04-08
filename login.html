@@ -1,5 +1,5 @@
 ﻿<div class="panel ml-auto mr-auto mt-5" style="width:300px" ng-controller="loginCtrl">
-    <form name="myForm" novalidate ng-submit="addNewUser(newUser, myForm.$valid)">
+    <form name="myForm" novalidate>
         <div class="well container pt-3 pb-3">
 
             <div class="form-group">
@@ -20,10 +20,10 @@
                     
             </div>
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary" ng-click="submit(newUser)">
+                <button type="submit" class="btn btn-primary" ng-click="submit(newUser, myForm.$valid)">
                     Sign in
                 </button>
-                <button type="submit" class="btn btn-primary" ng-click="auth(newUser)">
+                <button type="submit" class="btn btn-primary" ng-click="auth(newUser, myForm.$valid)">
                     Sign up
                 </button>
             </div>

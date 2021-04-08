@@ -100,75 +100,94 @@ angular
       } else $scope.refresh();
     };
 
+    $scope.$on("currentUser_", function (event, args) {
+      $scope.userOn = args.userLogin_;
+    });
+
     $scope.refresh();
   })
 
-  .controller("loginCtrl", function ($scope, $location, $localStorage) {
-    $scope.addNewUser = function (userDetails, isvalid) {
-      if (isvalid) {
-        $scope.message = userDetails.name + " " + userDetails.email;
-      } else {
-        $scope.message = "Error";
-        $scope.showError = true;
-      }
-    };
+  //  *********************************
 
-    $scope.getError = function (error) {
-      if (angular.isDefined(error)) {
-        if (error.required) {
-          return "Поле не должно быть пустым";
+  .controller(
+    "loginCtrl",
+    function ($scope, $location, $localStorage, $rootScope) {
+      $scope.addNewUser = function (userDetails, isvalid) {
+        if (isvalid) {
+          $scope.message = userDetails.name + " " + userDetails.email;
+        } else {
+          $scope.message = "Error";
+          $scope.showError = true;
         }
-        if (error.email) {
-          return "Введите правильный email";
+      };
+
+      $scope.getError = function (error) {
+        if (angular.isDefined(error)) {
+          if (error.required) {
+            return "Поле не должно быть пустым";
+          }
+          if (error.email) {
+            return "Введите правильный email";
+          }
         }
-      }
-    };
+      };
 
-    $scope.$storage = $localStorage.$default({
-      users: [
-        {
-          name: "admin",
-          email: "admin@admin",
-        },
-      ],
-    });
+      $scope.$storage = $localStorage.$default({
+        users: [
+          {
+            name: "admin",
+            email: "admin@admin",
+          },
+        ],
+      });
 
-    $scope.submit = function (user) {
-      $scope.findUser = false;
+      $scope.submit = function (user, isvalid) {
+        $scope.addNewUser(user, isvalid);
+        $scope.findUser = false;
 
-      for (item in $localStorage.users) {
-        if (
-          JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-        ) {
-          $scope.findUser = true;
-          break;
+        if (isvalid) {
+          for (item in $localStorage.users) {
+            if (
+              JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+            ) {
+              $scope.findUser = true;
+              break;
+            }
+          }
+          if ($scope.findUser) {
+            $location.path("/posts");
+          } else {
+            alert("Пользователь не найден. Зарегистрируйтесь.");
+          }
         }
-      }
+      };
 
-      if ($scope.findUser) {
-        $location.path("/posts");
-      } else {
-        alert("Пользователь не найден. Зарегистрируйтесь.");
-      }
-    };
+      $scope.auth = function (user, isvalid) {
+        $scope.addNewUser(user, isvalid);
+        $scope.findUser = false;
 
-    $scope.auth = function (user) {
-      $scope.findUser = false;
+        if (isvalid) {
+          for (item in $localStorage.users) {
+            if (
+              JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+            ) {
+              $scope.findUser = true;
+              break;
+            }
+          }
 
-      for (item in $localStorage.users) {
-        if (
-          JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-        ) {
-          $scope.findUser = true;
-          break;
+          if ($scope.findUser) {
+            alert("Такой пользователь уже есть. Осуществите вход.");
+          } else {
+            $localStorage.users.push(user);
+            $location.path("/posts");
+            console.log("*", $scope.newUser);
+          }
         }
-      }
+      };
 
-      if ($scope.findUser) {
-        alert("Такой пользователь уже есть. Осуществите вход.");
-      } else {
-        $localStorage.users.push(user);
-        $location.path("/posts");
-      }
-    };
-  });
+      $rootScope.$broadcast("currentUser_", {
+        userLogin_: $scope.newUser,
+      });
+    }
+  );

@@ -7,7 +7,7 @@
           {{(items | filter: {selected : true}).length}}
       </span>
     </button>
-   
+    <span>{{user}}</span>
 </nav>
 
 <ng-include src="'table.html'" ng-show="currentView == 'table'"></ng-include>
