@@ -76,12 +76,15 @@ angular
     };
 
     $scope.delete = function (item) {
-      $http({
-        method: "DELETE",
-        url: "http://localhost:3000/deletenews/" + item.id,
-      }).success(function () {
-        $scope.items.splice($scope.items.indexOf(item), 1);
-      });
+      $scope.confirm = confirm("Статья будет удалена!");
+      if ($scope.confirm) {
+        $http({
+          method: "DELETE",
+          url: "http://localhost:3000/deletenews/" + item.id,
+        }).success(function () {
+          $scope.items.splice($scope.items.indexOf(item), 1);
+        });
+      }
     };
 
     $scope.createItem = function () {
@@ -162,7 +165,6 @@ angular
     });
 
     $scope.searchUser = function (user, users) {
-
       for (let i = 0; i < users.length; i++) {
         console.log(user.name);
         console.log(users[i].name);
