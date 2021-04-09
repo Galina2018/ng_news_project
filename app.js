@@ -161,19 +161,26 @@ angular
       ],
     });
 
+    $scope.searchUser = function (user, users) {
+
+      for (let i = 0; i < users.length; i++) {
+        console.log(user.name);
+        console.log(users[i].name);
+        if (user.name === users[i].name && user.email === users[i].email) {
+          $scope.findUser = true;
+          break;
+        }
+      }
+      return $scope.findUser;
+    };
+
     $scope.submit = function (user, isvalid) {
       $scope.addNewUser(user, isvalid);
       $scope.findUser = false;
 
       if (isvalid) {
-        for (item in $localStorage.users) {
-          if (
-            JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-          ) {
-            $scope.findUser = true;
-            break;
-          }
-        }
+        $scope.searchUser(user, $localStorage.users);
+
         if ($scope.findUser) {
           $location.path("/posts/" + user.name);
         } else {
@@ -187,14 +194,7 @@ angular
       $scope.findUser = false;
 
       if (isvalid) {
-        for (item in $localStorage.users) {
-          if (
-            JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-          ) {
-            $scope.findUser = true;
-            break;
-          }
-        }
+        $scope.searchUser(user, $localStorage.users);
 
         if ($scope.findUser) {
           alert("Такой пользователь уже есть. Осуществите вход.");
