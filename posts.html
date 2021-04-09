@@ -1,5 +1,5 @@
 ﻿ <div ng-controller="postsCtrl">
-  <nav class="navbar navbar-light fixed-top" ng-style="styleNav">
+  <nav class="navbar navbar-light fixed-top" ng-style="styleNav"  class="d-flex justify-content-between">
     <a class="navbar-brand">App news</a>
     <button type="button" class="btn btn-primary">
       Количество статей с пометкой "Избранные"
@@ -7,10 +7,19 @@
           {{(items | filter: {selected : true}).length}}
       </span>
     </button>
-    <div>
-      <div>Пользователь: {{currentItemName}}</div>
-      <div>Количество статей: {{items.length}}</div>
+    <div class="row">
+      <div class="col col-8">
+        <div>User: {{currentItemName}}</div>
+        <div>Всего статей: {{items.length}}</div>
+      </div>
+      <div class="d-flex col col-3">
+        <button class="btn btn-secondary btn-sm " ng-click="logout()" id="btn-logout">Logout</button>
+      </div>
     </div>
+
+
+    </div>
+
 
 </nav>
 
