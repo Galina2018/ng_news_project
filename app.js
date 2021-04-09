@@ -16,11 +16,20 @@ angular
       });
   })
 
-  .controller("defaultCtrl", function ($scope) {})
+  .controller("defaultCtrl", function ($scope, $http) {
+    $scope.getCourseUsd = function () {
+      $http
+        .get("https://www.nbrb.by/api/exrates/rates/145")
+        .success(function (response) {
+          $scope.courseUsd = response.Cur_OfficialRate;
+        });
+    };
+    $scope.getCourseUsd();
+  })
 
   //  ******* контроллер postsCtrl ********
 
-  .controller("postsCtrl", function ($scope, $http, $routeParams) {
+  .controller("postsCtrl", function ($scope, $http, $routeParams, $location) {
     $scope.currentView = "table";
     $scope.styleNav = {
       backgroundColor: "#bbcef0",
@@ -110,6 +119,10 @@ angular
       } else $scope.refresh();
     };
 
+    $scope.logout = function () {
+      $location.path("/");
+    };
+
     $scope.refresh();
   })
 
@@ -132,6 +145,9 @@ angular
         }
         if (error.email) {
           return "Введите правильный email";
+        }
+        if (error.maxlength) {
+          return "Не больше 26 символов";
         }
       }
     };

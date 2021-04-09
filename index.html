@@ -12,7 +12,8 @@
   <script src="app.js"></script>
 
   <style>
-    form .ng-invalid-required.ng-dirty {
+    form .ng-invalid-required.ng-dirty,
+        .ng-invalid-maxlength {
         background-color: lightpink;
     }
 
@@ -36,6 +37,11 @@
     div.error {
         color: red;
         font-weight: bold;
+    }
+
+    #btn-logout {
+        height: fit-content;
+        align-self: center;
     }
 </style>
 
