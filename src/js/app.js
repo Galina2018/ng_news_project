@@ -1,3 +1,6 @@
+// import angular from "angular";
+// import '../styles/styles.css';
+
 angular
   .module("App", ["ngRoute", "ngStorage"])
   // .constant("baseUrl", "http://localhost:3000/allnews/")
