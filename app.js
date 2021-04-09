@@ -1,13 +1,13 @@
 angular
   .module("App", ["ngRoute", "ngStorage"])
-  .constant("baseUrl", "http://localhost:3000/allnews/")
+  // .constant("baseUrl", "http://localhost:3000/allnews/")
   .config(function ($routeProvider) {
     $routeProvider
       .when("/", {
         templateUrl: "./login.html",
         controller: "loginCtrl",
       })
-      .when("/posts", {
+      .when("/posts/:name", {
         templateUrl: "posts.html",
         controller: "postsCtrl",
       })
@@ -18,21 +18,28 @@ angular
 
   .controller("defaultCtrl", function ($scope) {})
 
-  .controller("postsCtrl", function ($scope, $http, baseUrl) {
+  //  ******* контроллер postsCtrl ********
+
+  .controller("postsCtrl", function ($scope, $http, $routeParams) {
     $scope.currentView = "table";
     $scope.styleNav = {
       backgroundColor: "#bbcef0",
     };
 
+    $scope.currentItemName = $routeParams.name;
+
     $scope.refresh = function () {
-      $http.get(baseUrl).success(function (response) {
-        $scope.items = response.allnews;
-        $scope.hideNews = false;
-      });
+      $http
+        .get("http://localhost:3000/allnews/?name=" + $routeParams.name)
+        .success(function (response) {
+          $scope.items = response.allnews;
+          $scope.hideNews = false;
+        });
     };
 
     $scope.create = function (item) {
       $scope.refresh();
+
       $http
         .post("http://localhost:3000/addnews", { item: item, unshift: true })
         .success(function (item) {
@@ -69,7 +76,7 @@ angular
     };
 
     $scope.createItem = function () {
-      $scope.currentItem = {};
+      $scope.currentItem = { name: $scope.currentItemName };
       $scope.currentView = "edit";
     };
 
@@ -78,11 +85,11 @@ angular
       $scope.currentView = "edit";
     };
 
-    $scope.createOrEditItem = function (item) {
+    $scope.createOrEditItem = function (item, name) {
       if (angular.isDefined(item.id)) {
-        $scope.update(item);
+        $scope.update(item, name);
       } else {
-        $scope.create(item);
+        $scope.create(item, name);
       }
     };
 
@@ -93,101 +100,92 @@ angular
     $scope.updateSelect = function (item) {
       if (item.selected == true) {
         $http
-          .get("http://localhost:3000/allnews/?selected=true")
+          .get(
+            "http://localhost:3000/allnews/?selected=true&name=" +
+              $scope.currentItemName
+          )
           .success(function (response) {
             $scope.items = response.allnews;
           });
       } else $scope.refresh();
     };
 
-    $scope.$on("currentUser_", function (event, args) {
-      $scope.userOn = args.userLogin_;
-    });
-
     $scope.refresh();
   })
 
-  //  *********************************
+  //  ******* контроллер loginCtrl ********
 
-  .controller(
-    "loginCtrl",
-    function ($scope, $location, $localStorage, $rootScope) {
-      $scope.addNewUser = function (userDetails, isvalid) {
-        if (isvalid) {
-          $scope.message = userDetails.name + " " + userDetails.email;
+  .controller("loginCtrl", function ($scope, $location, $localStorage) {
+    $scope.addNewUser = function (userDetails, isvalid) {
+      if (isvalid) {
+        $scope.message = userDetails.name + " " + userDetails.email;
+      } else {
+        $scope.message = "Error";
+        $scope.showError = true;
+      }
+    };
+
+    $scope.getError = function (error) {
+      if (angular.isDefined(error)) {
+        if (error.required) {
+          return "Поле не должно быть пустым";
+        }
+        if (error.email) {
+          return "Введите правильный email";
+        }
+      }
+    };
+
+    $scope.$storage = $localStorage.$default({
+      users: [
+        {
+          name: "admin",
+          email: "admin@admin",
+        },
+      ],
+    });
+
+    $scope.submit = function (user, isvalid) {
+      $scope.addNewUser(user, isvalid);
+      $scope.findUser = false;
+
+      if (isvalid) {
+        for (item in $localStorage.users) {
+          if (
+            JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+          ) {
+            $scope.findUser = true;
+            break;
+          }
+        }
+        if ($scope.findUser) {
+          $location.path("/posts/" + user.name);
         } else {
-          $scope.message = "Error";
-          $scope.showError = true;
+          alert("Пользователь не найден. Зарегистрируйтесь.");
         }
-      };
+      }
+    };
 
-      $scope.getError = function (error) {
-        if (angular.isDefined(error)) {
-          if (error.required) {
-            return "Поле не должно быть пустым";
-          }
-          if (error.email) {
-            return "Введите правильный email";
-          }
-        }
-      };
+    $scope.auth = function (user, isvalid) {
+      $scope.addNewUser(user, isvalid);
+      $scope.findUser = false;
 
-      $scope.$storage = $localStorage.$default({
-        users: [
-          {
-            name: "admin",
-            email: "admin@admin",
-          },
-        ],
-      });
-
-      $scope.submit = function (user, isvalid) {
-        $scope.addNewUser(user, isvalid);
-        $scope.findUser = false;
-
-        if (isvalid) {
-          for (item in $localStorage.users) {
-            if (
-              JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-            ) {
-              $scope.findUser = true;
-              break;
-            }
-          }
-          if ($scope.findUser) {
-            $location.path("/posts");
-          } else {
-            alert("Пользователь не найден. Зарегистрируйтесь.");
+      if (isvalid) {
+        for (item in $localStorage.users) {
+          if (
+            JSON.stringify(user) === JSON.stringify($localStorage.users[item])
+          ) {
+            $scope.findUser = true;
+            break;
           }
         }
-      };
 
-      $scope.auth = function (user, isvalid) {
-        $scope.addNewUser(user, isvalid);
-        $scope.findUser = false;
-
-        if (isvalid) {
-          for (item in $localStorage.users) {
-            if (
-              JSON.stringify(user) === JSON.stringify($localStorage.users[item])
-            ) {
-              $scope.findUser = true;
-              break;
-            }
-          }
-
-          if ($scope.findUser) {
-            alert("Такой пользователь уже есть. Осуществите вход.");
-          } else {
-            $localStorage.users.push(user);
-            $location.path("/posts");
-            console.log("*", $scope.newUser);
-          }
+        if ($scope.findUser) {
+          alert("Такой пользователь уже есть. Осуществите вход.");
+        } else {
+          $localStorage.users.push(user);
+          $location.path("/posts/" + user.name);
         }
-      };
-
-      $rootScope.$broadcast("currentUser_", {
-        userLogin_: $scope.newUser,
-      });
-    }
-  );
+      }
+    };
+  });

@@ -1,6 +1,7 @@
 <form style="padding:4rem 1rem 1rem">
 
   <div class="form-group">
+    
     <label for="searchText">Find article</label><br />
     <input placeholder="enter the title of the article" ng-model="textTitle" type="text" id="searchText">         
   </div>
@@ -8,6 +9,7 @@
   <div class="d-flex justify-content-between">
 
       <button class="btn btn-primary btn-sm" ng-click="createItem()">New article</button>
+      <span>{{userOn}}</span>
   </div>
 
 </form>

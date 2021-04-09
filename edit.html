@@ -1,6 +1,12 @@
 <div class="container-fluid">
   <div class="input-group" style="margin-top: 5rem">
     <div class="input-group-prepend">
+      <span class="input-group-text" id="titleArticle">User</span>
+    </div>
+    <input ng-model="currentItem.name" readonly type="text" class="form-control" aria-label="user" aria-describedby="title of the article">
+  </div>
+  <div class="input-group">
+    <div class="input-group-prepend">
       <span class="input-group-text" id="titleArticle">Article's title</span>
     </div>
     <input ng-model="currentItem.title" type="text" class="form-control" placeholder="Title of the article" aria-label="title" aria-describedby="title of the article">
@@ -11,7 +17,7 @@
     </div>
     <textarea ng-model="currentItem.body" class="form-control" aria-label="Article textarea" placeholder=" Body of the article"></textarea>
   </div><br/>
-  <button type="button" class="btn btn-primary" ng-click="createOrEditItem(currentItem)">Save</button>
+  <button type="button" class="btn btn-primary" ng-click="createOrEditItem(currentItem, currentItemName)">Save</button>
 <button type="button" class="btn btn-primary" ng-click="cancelEdit()">Cancel</button>
 </div>
 
