@@ -19,8 +19,8 @@
           <tr>
               <th>Title</th>
               <th>Article</th>
-              <th>Избранные</th> 
-              <th><input type="checkbox" ng-model="item.selected" ng-click="updateSelect(item)" /></th> 
+              <th></th> 
+              <th><label for="sellAll">Избранные</label><input type="checkbox" ng-model="selectedAll" ng-click="updateSelect(selectedAll)" id="selAll" /></th> 
               <th></th>
               <th></th>
           </tr>
@@ -31,8 +31,8 @@
               <td><input type="checkbox" ng-model="item.selected" ng-click="update(item)" /></td>
               <td></td>
               <td>                
-                <button ng-click="editItem(item)" type="button" class="btn btn-outline-primary mr-auto btn-sm">Edit</button>
-                <button ng-click="delete(item)" type="button" class="btn btn-outline-danger mr-auto btn-sm">Delete</button>
+                <button ng-click="editItem(item)" type="submit" class="btn btn-outline-primary mr-auto btn-sm">Edit</button>
+                <button ng-click="delete(item)" type="submit" class="btn btn-outline-danger mr-auto btn-sm">Delete</button>
               </td>
           </tr>
       </tbody>

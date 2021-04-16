@@ -7,14 +7,20 @@
           {{(items | filter: {selected : true}).length}}
       </span>
     </button>
-    <div>
-      <div>Пользователь: {{currentItemName}}</div>
-      <div>Количество статей: {{items.length}}</div>
+    <div class="row">
+      <div class="col col-8">
+        <div>User: {{currentItemName}}</div>
+        <div>Всего статей: {{items.length}}</div>
+      </div>
+      <div class="d-flex col col-3">
+        <button class="btn btn-secondary btn-sm " ng-click="logout()" id="btn-logout">Logout</button>
+      </div>
     </div>
+
 
 </nav>
 
-<ng-include src="'table.html'" ng-show="currentView == 'table'"></ng-include>
-<ng-include src="'edit.html'" ng-show="currentView == 'edit'"></ng-include>
+<ng-include src="'src/table.html'" ng-show="currentView == 'table'"></ng-include>
+<ng-include src="'src/edit.html'" ng-show="currentView == 'edit'"></ng-include>
   
 </div>
