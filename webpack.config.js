@@ -4,6 +4,30 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssAssetWebpackPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserWebpackPlugin = require("terser-webpack-plugin");
+// const { config } = require("process");
+
+const isDev = process.env.NODE_ENV === "development";
+const isProd = !isDev;
+console.log("is dev: ", isDev);
+
+const optimization = () => {
+  const config = {
+    splitChunks: {
+      chunks: "all",
+    },
+  };
+
+  if (isProd) {
+    (config.minimize = true),
+      (config.minimizer = [
+        new OptimizeCssAssetWebpackPlugin(),
+        new TerserWebpackPlugin(),
+      ]);
+  }
+  return config;
+};
 
 module.exports = {
   entry: {
@@ -12,9 +36,12 @@ module.exports = {
   },
 
   context: path.resolve(__dirname, "src"),
+  optimization: optimization(),
+
   devServer: {
     publicPath: "/",
     port: 9000,
+    hot: isDev,
     //    contentBase: path.join(process.cwd(), 'dist'),
     host: "localhost",
     //   historyApiFallback: true,
@@ -43,11 +70,11 @@ module.exports = {
   },
 
   plugins: [
-    new MiniCssExtractPlugin({ filename: "./style.css" }),
+    new MiniCssExtractPlugin({ filename: "[name].[hash].css" }),
     new HtmlWebpackPlugin({
       template: "index.html",
       minify: {
-        collapseWhitespace: false,
+        collapseWhitespace: isProd,
       },
     }),
     new CleanWebpackPlugin(),
