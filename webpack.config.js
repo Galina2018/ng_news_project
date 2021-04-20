@@ -6,7 +6,6 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetWebpackPlugin = require("optimize-css-assets-webpack-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
-// const { config } = require("process");
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
@@ -31,8 +30,7 @@ const optimization = () => {
 
 module.exports = {
   entry: {
-    //    polyfill: "babel-polyfill",
-    app: "./js/app.js",
+    entry: ["@babel/polyfill", "./js/app.js"],
   },
 
   context: path.resolve(__dirname, "src"),
@@ -42,13 +40,9 @@ module.exports = {
     publicPath: "/",
     port: 9000,
     hot: isDev,
-    //    contentBase: path.join(process.cwd(), 'dist'),
     host: "localhost",
-    //   historyApiFallback: true,
-    //   noInfo: false,
-    //   stats: 'minimal',
-    //   hot: true,
   },
+  devtool: isDev ? "source-map" : "",
   module: {
     rules: [
       {
@@ -57,6 +51,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: "babel-loader",
@@ -65,6 +60,14 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.less$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      },
+      {
+        test: /\.s[ac]ss$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
       },
     ],
   },

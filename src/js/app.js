@@ -6,6 +6,8 @@ import "jquery/dist/jquery.js";
 import "popper.js/dist/umd/popper.js";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/less.less";
+import "../styles/scss.scss";
 
 angular
   .module("App", ["ngRoute", "ngStorage"])
