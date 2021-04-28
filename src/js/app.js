@@ -1,6 +1,7 @@
 var angular = require("angular");
 var ngRoute = require("angular-route");
 var ngStorage = require("ngstorage");
+
 import "../styles/styles.css";
 import "jquery/dist/jquery.js";
 import "popper.js/dist/umd/popper.js";
@@ -8,9 +9,21 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/less.less";
 import "../styles/scss.scss";
+import "angular-material";
+import "angular-material/angular-material.css";
+import "angular-messages";
+// import "angular-animate";
+// import "angular-aria";
 
 angular
-  .module("App", ["ngRoute", "ngStorage"])
+  .module("App", [
+    "ngRoute",
+    "ngStorage",
+    "ngMaterial",
+    "ngMessages",
+    // "ngAnimate",
+    // "ngAria",
+  ])
   // .constant("baseUrl", "http://localhost:3000/allnews/")
   .config(function ($routeProvider) {
     $routeProvider
@@ -126,6 +139,38 @@ angular
 
     $scope.logout = function () {
       $location.path("/");
+    };
+
+    // $scope.currentItem.dateCreation = new Date();
+    $scope.isOpen = false;
+
+    $scope.updateAutocomplete = function (searchText) {
+      console.log(typeof searchText);
+      console.log(searchText);
+      if (searchText != "") {
+        $http
+          .get(
+            "http://localhost:3000/allnews/?name=" +
+              $scope.currentItemName +
+              "&title=" +
+              searchText
+          )
+          .then(
+            function (response) {
+              $scope.items = response.data.allnews;
+            },
+            function errorCallback(response) {
+              console.log("title no");
+            }
+          );
+      }
+      if (!searchText) {
+        $scope.refresh();
+      }
+    };
+
+    $scope.querySearch = function (query) {
+      return $scope.items.filter((item) => item.title.indexOf(query) != -1);
     };
 
     $scope.refresh();

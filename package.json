@@ -16,6 +16,10 @@
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "angular-animate": "1.6.2",
+    "angular-aria": "1.6.2",
+    "angular-material": "1.2.2",
+    "angular-messages": "1.6.2",
     "bootstrap": "^4.6.0",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1"

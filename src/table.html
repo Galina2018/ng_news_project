@@ -3,7 +3,26 @@
   <div class="form-group">
     
     <label for="searchText">Find article</label><br />
-    <input placeholder="enter the title of the article" ng-model="textTitle" type="text" id="searchText">         
+    <!-- <input placeholder="enter the title of the article" ng-model="textTitle" type="text" id="searchText">   -->
+    
+
+    <md-autocomplete
+    md-selected-item="selectedItem"
+    md-selected-item-change="updateAutocomplete(selectedItem.title)"
+    md-search-text="searchText"
+    md-search-text-change="cl(searchText)"
+    md-items="item in querySearch(searchText)"
+    md-item-text="item.title"
+    md-min-length="0"
+    placeholder="Enter title of article"
+    md-hide-autocomplete-on-enter>
+  
+  <md-item-template>
+    <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
+  </md-item-template>
+  <md-not-found>No matches found.</md-not-found>
+
+</md-autocomplete>
   </div>
   
   <div class="d-flex justify-content-between">
@@ -19,17 +38,17 @@
           <tr>
               <th>Title</th>
               <th>Article</th>
-              <th></th> 
-              <th class="d-flex justify-content-between "><input type="checkbox" ng-model="selectedAll" ng-click="updateSelect(selectedAll)" id="sellAll" /><label for="sellAll">Избранные</label></th> 
-              <th></th>
+              <th>{{searchText}}</th> 
+              <th class="d-flex"><input type="checkbox" ng-model="selectedAll" ng-click="updateSelect(selectedAll)" id="sellAll" /><label for="sellAll">Избранные</label></th> 
+              <th>Дата создания</th>
               <th></th>
           </tr>
-          <tr ng-repeat="item in items | filter : textTitle">
+          <tr ng-repeat="item in items">
               <td>{{item.title}}</td>
               <td>{{item.body}}</td>
               <td></td>
               <td><input type="checkbox" ng-model="item.selected" ng-click="update(item)" /></td>
-              <td></td>
+              <td>{{item.dateCreation | date:"dd.MM.yyyy"}}</td>
               <td>                
                 <button ng-click="editItem(item)" type="submit" class="btn btn-outline-primary mr-auto btn-sm">Edit</button>
                 <button ng-click="delete(item)" type="submit" class="btn btn-outline-danger mr-auto btn-sm">Delete</button>
