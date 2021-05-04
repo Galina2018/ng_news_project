@@ -1,8 +1,7 @@
 <form style="padding:5rem 0.5rem 0.5rem">
 
   <div class="form-group">
-    
-    <label for="searchText">Find article</label><br />
+    <label for="searchText">{{translation.Find_article}}</label><br />
     <!-- <input placeholder="enter the title of the article" ng-model="textTitle" type="text" id="searchText">   -->
     
 
@@ -14,7 +13,7 @@
     md-items="item in querySearch(searchText)"
     md-item-text="item.title"
     md-min-length="0"
-    placeholder="Enter title of article"
+    placeholder={{translation.placeholder}}
     md-hide-autocomplete-on-enter>
   
   <md-item-template>
@@ -27,7 +26,7 @@
   
   <div class="d-flex justify-content-between">
 
-      <button class="btn btn-primary btn-sm" ng-click="createItem()">New article</button>
+      <button class="btn btn-primary btn-sm" ng-click="createItem()">{{translation.New_article}}</button>
   </div>
 
 </form>
@@ -36,11 +35,11 @@
   <table class="table">
       <tbody>
           <tr>
-              <th>Title</th>
-              <th>Article</th>
-              <th>{{searchText}}</th> 
-              <th class="d-flex"><input type="checkbox" ng-model="selectedAll" ng-click="updateSelect(selectedAll)" id="sellAll" /><label for="sellAll">Избранные</label></th> 
-              <th>Дата создания</th>
+              <th>{{translation.Title}}</th>
+              <th>{{translation.Article}}</th>
+              <th></th> 
+              <th class="d-flex pt-3"><input type="checkbox" ng-model="selectedAll" ng-click="updateSelect(selectedAll)" id="sellAll" /><label for="sellAll">{{translation.Selected}}</label></th> 
+              <th>{{translation.Date}}</th>
               <th></th>
           </tr>
           <tr ng-repeat="item in items">

@@ -1,6 +1,7 @@
 var angular = require("angular");
 var ngRoute = require("angular-route");
 var ngStorage = require("ngstorage");
+var ngResource = require("angular-resource");
 
 import "../styles/styles.css";
 import "jquery/dist/jquery.js";
@@ -12,8 +13,6 @@ import "../styles/scss.scss";
 import "angular-material";
 import "angular-material/angular-material.css";
 import "angular-messages";
-// import "angular-animate";
-// import "angular-aria";
 
 angular
   .module("App", [
@@ -23,6 +22,7 @@ angular
     "ngMessages",
     // "ngAnimate",
     // "ngAria",
+    "ngResource",
   ])
   // .constant("baseUrl", "http://localhost:3000/allnews/")
   .config(function ($routeProvider) {
@@ -40,144 +40,187 @@ angular
       });
   })
 
-  .controller("defaultCtrl", function ($scope) {})
+  .factory("servicePostsget", function ($http, $routeParams) {
+    return {
+      refresh: function () {
+        return $http.get(
+          "http://localhost:3000/allnews/?name=" + $routeParams.name
+        );
+      },
+    };
+  })
+
+  .service("translationService", function ($resource) {
+    this.getTranslation = function ($scope, language) {
+      var languageFilePath = "src/locales/translation_" + language + ".json";
+      $resource(languageFilePath).get(function (data) {
+        $scope.translation = data;
+      });
+    };
+  })
 
   //  ******* контроллер postsCtrl ********
 
-  .controller("postsCtrl", function ($scope, $http, $routeParams, $location) {
-    $scope.currentView = "table";
-    $scope.selectedAll = false;
-    $scope.styleNav = {
-      backgroundColor: "#bbcef0",
-    };
-
-    $scope.currentItemName = $routeParams.name;
-
-    $scope.refresh = function () {
-      $http
-        .get("http://localhost:3000/allnews/?name=" + $routeParams.name)
-        .then(function (response) {
-          $scope.items = response.data.allnews;
-          $scope.hideNews = false;
-        });
-    };
-
-    $scope.create = function (item) {
-      $scope.refresh();
-
-      $http
-        .post("http://localhost:3000/addnews", { item: item, unshift: true })
-        .then(function (item) {
-          $scope.items.unshift(item);
-          $scope.currentView = "table";
-          $scope.refresh();
-        });
-    };
-
-    $scope.update = function (item) {
-      $http({
-        url: "http://localhost:3000/editnews",
-        method: "PUT",
-        data: item,
-      }).then(function (modifiedItem) {
-        for (var i = 0; i < $scope.items.length; i++) {
-          if ($scope.items[i].id == modifiedItem.config.data.id) {
-            $scope.items[i] = modifiedItem.config.data;
-            break;
-          }
-        }
-        $scope.currentView = "table";
-        // $scope.refresh();
-      });
-    };
-
-    $scope.delete = function (item) {
-      $http({
-        method: "DELETE",
-        url: "http://localhost:3000/deletenews/" + item.id,
-      }).then(function () {
-        $scope.items.splice($scope.items.indexOf(item), 1);
-      });
-    };
-
-    $scope.createItem = function () {
-      $scope.currentItem = { name: $scope.currentItemName };
-      $scope.currentView = "edit";
-    };
-
-    $scope.editItem = function (item) {
-      $scope.currentItem = angular.copy(item);
-      $scope.currentView = "edit";
-    };
-
-    $scope.createOrEditItem = function (item, name) {
-      if (angular.isDefined(item.id)) {
-        $scope.update(item, name);
-      } else {
-        $scope.create(item, name);
-      }
-    };
-
-    $scope.cancelEdit = function () {
+  .controller(
+    "postsCtrl",
+    function (
+      $scope,
+      $http,
+      $routeParams,
+      $location,
+      servicePostsget,
+      translationService
+    ) {
       $scope.currentView = "table";
-    };
+      $scope.selectedAll = false;
+      $scope.styleNav = {
+        backgroundColor: "#bbcef0",
+      };
 
-    $scope.updateSelect = function (selAll) {
-      if (selAll == true) {
-        $http
-          .get(
-            "http://localhost:3000/allnews/?selected=true&name=" +
-              $scope.currentItemName
-          )
-          .then(function (response) {
-            $scope.items = response.data.allnews;
-          });
-      } else {
-        $scope.refresh();
-      }
-    };
+      $scope.currentItemName = $routeParams.name;
 
-    $scope.logout = function () {
-      $location.path("/");
-    };
+      $scope.create = function (item) {
+        if (item.title && item.body) {
+          console.log(" not empty title");
+          $http
+            .post("http://localhost:3000/addnews", {
+              item: item,
+              unshift: true,
+            })
+            .then(function (item) {
+              $scope.items.unshift(item);
+              $scope.currentView = "table";
+              servicePostsget.refresh().then(function (response) {
+                $scope.items = response.data.allnews;
+                $scope.hideNews = false;
+              });
+            });
+        } else $scope.cancelEdit();
+      };
 
-    // $scope.currentItem.dateCreation = new Date();
-    $scope.isOpen = false;
-
-    $scope.updateAutocomplete = function (searchText) {
-      console.log(typeof searchText);
-      console.log(searchText);
-      if (searchText != "") {
-        $http
-          .get(
-            "http://localhost:3000/allnews/?name=" +
-              $scope.currentItemName +
-              "&title=" +
-              searchText
-          )
-          .then(
-            function (response) {
-              $scope.items = response.data.allnews;
-            },
-            function errorCallback(response) {
-              console.log("title no");
+      $scope.update = function (item) {
+        $http({
+          url: "http://localhost:3000/editnews",
+          method: "PUT",
+          data: item,
+        }).then(function (modifiedItem) {
+          for (var i = 0; i < $scope.items.length; i++) {
+            if ($scope.items[i].id == modifiedItem.config.data.id) {
+              $scope.items[i] = modifiedItem.config.data;
+              break;
             }
-          );
-      }
-      if (!searchText) {
-        $scope.refresh();
-      }
-    };
+          }
+          $scope.currentView = "table";
+        });
+      };
 
-    $scope.querySearch = function (query) {
-      return $scope.items.filter((item) => item.title.indexOf(query) != -1);
-    };
+      $scope.delete = function (item) {
+        $http({
+          method: "DELETE",
+          url: "http://localhost:3000/deletenews/" + item.id,
+        }).then(function () {
+          $scope.items.splice($scope.items.indexOf(item), 1);
+        });
+      };
 
-    $scope.refresh();
-  })
+      $scope.createItem = function () {
+        $scope.currentItem = { name: $scope.currentItemName };
+        $scope.currentView = "edit";
+        $scope.currentItem.dateCreation = new Date();
+      };
 
-  //  ******* контроллер loginCtrl ********
+      $scope.editItem = function (item) {
+        $scope.currentItem = angular.copy(item);
+        $scope.currentView = "edit";
+      };
 
+      $scope.createOrEditItem = function (item, name) {
+        if (angular.isDefined(item.id)) {
+          $scope.update(item, name);
+        } else {
+          $scope.create(item, name);
+        }
+      };
+
+      $scope.cancelEdit = function () {
+        $scope.currentView = "table";
+      };
+
+      $scope.updateSelect = function (selAll) {
+        if (selAll == true) {
+          $http
+            .get(
+              "http://localhost:3000/allnews/?selected=true&name=" +
+                $scope.currentItemName
+            )
+            .then(function (response) {
+              $scope.items = response.data.allnews;
+            });
+        } else {
+          servicePostsget.refresh().then(function (response) {
+            $scope.items = response.data.allnews;
+            $scope.hideNews = false;
+          });
+        }
+      };
+
+      $scope.logout = function () {
+        $location.path("/");
+      };
+
+      $scope.isOpen = false;
+
+      $scope.updateAutocomplete = function (searchText) {
+        console.log(typeof searchText);
+        console.log(searchText);
+        if (searchText != "") {
+          $http
+            .get(
+              "http://localhost:3000/allnews/?name=" +
+                $scope.currentItemName +
+                "&title=" +
+                searchText
+            )
+            .then(
+              function (response) {
+                $scope.items = response.data.allnews;
+              },
+              function errorCallback(response) {
+                console.log("title no");
+              }
+            );
+        }
+        if (!searchText) {
+          servicePostsget.refresh().then(function (response) {
+            $scope.items = response.data.allnews;
+            $scope.hideNews = false;
+          });
+        }
+      };
+
+      $scope.querySearch = function (query) {
+        return $scope.items.filter((item) => item.title.indexOf(query) != -1);
+      };
+
+      servicePostsget.refresh().then(function (response) {
+        $scope.items = response.data.allnews;
+        $scope.hideNews = false;
+      });
+
+      //Выполняется перевод, если произошло событие смены языка
+      $scope.translate = function () {
+        translationService.getTranslation($scope, $scope.selectedLanguage);
+      };
+      // Инициализация
+      $scope.selectedLanguage = "en";
+      $scope.translate();
+    }
+  );
+
+//  ******* контроллер loginCtrl ********
+
+angular
+  .module("App")
   .controller("loginCtrl", function ($scope, $location, $localStorage) {
     $scope.addNewUser = function (userDetails, isvalid) {
       if (isvalid) {

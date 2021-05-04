@@ -1,0 +1,17 @@
+{
+  "App_news" : "App news",
+  "Number" : "Number of articles marked 'Selected'",
+  "User" : "User",
+  "Total_articles" : "Total articles",
+  "Logout" : "Logout",
+  "Find_article" : "Find article",
+  "placeholder" : "Enter title of article",
+  "New_article" : "New article",
+  "Title" : "Title",
+  "Article" : "Article",
+  "Selected" : "Selected",
+  "Date" : "Date of creation",
+  "Date_enter" : "Enter date",
+  "Save" : "Save",
+  "Cancel" : "Cancel"
+}

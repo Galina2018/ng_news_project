@@ -1,38 +1,38 @@
 <div class="container-fluid">
   <div class="input-group" style="margin-top: 5rem">
     <div class="input-group-prepend">
-      <span class="input-group-text" id="titleArticle">User</span>
+      <span class="input-group-text" id="titleArticle">{{translation.User}}</span>
     </div>
     <input ng-model="currentItem.name" readonly type="text" class="form-control" aria-label="user" aria-describedby="title of the article">
   </div>
   <div class="input-group">
     <div class="input-group-prepend">
-      <span class="input-group-text" id="titleArticle">Article's title</span>
+      <span class="input-group-text" id="titleArticle">{{translation.Title}}</span>
     </div>
     <input ng-model="currentItem.title" type="text" class="form-control" placeholder="Title of the article" aria-label="title" aria-describedby="title of the article">
   </div>
   <div class="input-group">
     <div class="input-group-prepend">
-      <span class="input-group-text">Article's body</span>
+      <span class="input-group-text">{{translation.Article}}</span>
     </div>
     <textarea ng-model="currentItem.body" class="form-control" aria-label="Article textarea" placeholder=" Body of the article" rows="6"></textarea>
   </div>
   <div class="input-group">
     <div class="input-group-prepend">
-      <span class="input-group-text">Date</span>
+      <span class="input-group-text">{{translation.Date}}</span>
     </div>
     <div class="form-control" style="height: 70px;">
       <div layout-gt-xs="row">
         <div flex-gt-xs="">
           <h4 id="datepicker-header"></h4>
-          <md-datepicker ng-model="currentItem.dateCreation" md-placeholder="Enter date" input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header " ></md-datepicker>
+          <md-datepicker ng-model="currentItem.dateCreation" md-placeholder={{translation.Date_enter}} input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header"></md-datepicker>
         </div>
       </div>
     </div>
  
   </div><br/>
-  <button type="button" class="btn btn-primary" ng-click="createOrEditItem(currentItem, currentItemName)">Save</button>
-<button type="button" class="btn btn-primary" ng-click="cancelEdit()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="createOrEditItem(currentItem, currentItemName)">{{translation.Save}}</button>
+<button type="button" class="btn btn-primary" ng-click="cancelEdit()">{{translation.Cancel}}</button>
 </div>
 
 

@@ -9,7 +9,6 @@ const TerserWebpackPlugin = require("terser-webpack-plugin");
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
-console.log("is dev: ", isDev);
 
 const optimization = () => {
   const config = {

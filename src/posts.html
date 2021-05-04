@@ -1,22 +1,27 @@
 ﻿ <div ng-controller="postsCtrl">
   <nav class="navbar navbar-light fixed-top" ng-style="styleNav">
-    <a class="navbar-brand">App news</a>
+    <a class="navbar-brand">{{translation.App_news}}</a>
     <button type="button" class="btn btn-primary">
-      Количество статей с пометкой "Избранные"
+      {{translation.Number}}
       <span class="badge badge-light"> 
           {{(items | filter: {selected : true}).length}}
       </span>
     </button>
     <div class="row">
-      <div class="col col-8">
-        <div>User: {{currentItemName}}</div>
-        <div>Всего статей: {{items.length}}</div>
+      <div class="col col-6">
+        <div>{{translation.User}}: {{currentItemName}}</div>
+        <div>{{translation.Total_articles}}: {{items.length}}</div>
       </div>
       <div class="d-flex col col-3">
-        <button type="button" class="btn btn-secondary btn-sm " ng-click="logout()" id="btn-logout">Logout</button>
+        <button type="button" class="btn btn-secondary btn-sm " ng-click="logout()" id="btn-logout">{{translation.Logout}}</button>
+      </div>
+      <div  class="col col-2">
+        <select ng-change="translate()" ng-model="selectedLanguage">
+          <option value="en">Eng</option>
+          <option value="ru">Рус</option>
+        </select>
       </div>
     </div>
-
 
 </nav>
 
