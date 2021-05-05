@@ -1,7 +1,7 @@
-var angular = require("angular");
-var ngRoute = require("angular-route");
-var ngStorage = require("ngstorage");
-var ngResource = require("angular-resource");
+import angular from "angular";
+import ngRoute from "angular-route";
+import ngStorage from "ngstorage";
+import ngResource from "angular-resource";
 
 import "../styles/styles.css";
 import "jquery/dist/jquery.js";
@@ -24,7 +24,6 @@ angular
     // "ngAria",
     "ngResource",
   ])
-  // .constant("baseUrl", "http://localhost:3000/allnews/")
   .config(function ($routeProvider) {
     $routeProvider
       .when("/", {
@@ -45,6 +44,31 @@ angular
       refresh: function () {
         return $http.get(
           "http://localhost:3000/allnews/?name=" + $routeParams.name
+        );
+      },
+
+      create: function (item) {
+        return $http.post("http://localhost:3000/addnews", {
+          item: item,
+          unshift: true,
+        });
+      },
+
+      update: function (item) {
+        return $http.put("http://localhost:3000/editnews", item);
+      },
+
+      delete: function (item) {
+        return $http({
+          method: "DELETE",
+          url: "http://localhost:3000/deletenews/" + item.id,
+        });
+      },
+
+      updateSelect: function () {
+        return $http.get(
+          "http://localhost:3000/allnews/?selected=true&name=" +
+            $routeParams.name
         );
       },
     };
@@ -79,31 +103,25 @@ angular
 
       $scope.currentItemName = $routeParams.name;
 
+      servicePostsget.refresh().then(function (response) {
+        $scope.itemsTotal = response.data.allnews;
+      });
+
       $scope.create = function (item) {
         if (item.title && item.body) {
-          console.log(" not empty title");
-          $http
-            .post("http://localhost:3000/addnews", {
-              item: item,
-              unshift: true,
-            })
-            .then(function (item) {
-              $scope.items.unshift(item);
-              $scope.currentView = "table";
-              servicePostsget.refresh().then(function (response) {
-                $scope.items = response.data.allnews;
-                $scope.hideNews = false;
-              });
+          servicePostsget.create(item).then(function (item) {
+            $scope.items.unshift(item);
+            $scope.currentView = "table";
+            servicePostsget.refresh().then(function (response) {
+              $scope.items = response.data.allnews;
+              $scope.hideNews = false;
             });
+          });
         } else $scope.cancelEdit();
       };
 
       $scope.update = function (item) {
-        $http({
-          url: "http://localhost:3000/editnews",
-          method: "PUT",
-          data: item,
-        }).then(function (modifiedItem) {
+        servicePostsget.update(item).then(function (modifiedItem) {
           for (var i = 0; i < $scope.items.length; i++) {
             if ($scope.items[i].id == modifiedItem.config.data.id) {
               $scope.items[i] = modifiedItem.config.data;
@@ -115,10 +133,7 @@ angular
       };
 
       $scope.delete = function (item) {
-        $http({
-          method: "DELETE",
-          url: "http://localhost:3000/deletenews/" + item.id,
-        }).then(function () {
+        servicePostsget.delete(item).then(function () {
           $scope.items.splice($scope.items.indexOf(item), 1);
         });
       };
@@ -148,14 +163,9 @@ angular
 
       $scope.updateSelect = function (selAll) {
         if (selAll == true) {
-          $http
-            .get(
-              "http://localhost:3000/allnews/?selected=true&name=" +
-                $scope.currentItemName
-            )
-            .then(function (response) {
-              $scope.items = response.data.allnews;
-            });
+          servicePostsget.updateSelect().then(function (response) {
+            $scope.items = response.data.allnews;
+          });
         } else {
           servicePostsget.refresh().then(function (response) {
             $scope.items = response.data.allnews;
@@ -171,8 +181,6 @@ angular
       $scope.isOpen = false;
 
       $scope.updateAutocomplete = function (searchText) {
-        console.log(typeof searchText);
-        console.log(searchText);
         if (searchText != "") {
           $http
             .get(
@@ -207,11 +215,10 @@ angular
         $scope.hideNews = false;
       });
 
-      //Выполняется перевод, если произошло событие смены языка
       $scope.translate = function () {
         translationService.getTranslation($scope, $scope.selectedLanguage);
       };
-      // Инициализация
+
       $scope.selectedLanguage = "en";
       $scope.translate();
     }
@@ -253,8 +260,6 @@ angular
 
     $scope.searchUser = function (user, users) {
       for (let i = 0; i < users.length; i++) {
-        console.log(user.name);
-        console.log(users[i].name);
         if (user.name === users[i].name && user.email === users[i].email) {
           $scope.findUser = true;
           break;
