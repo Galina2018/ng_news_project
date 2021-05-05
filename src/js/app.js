@@ -228,6 +228,15 @@ angular
 
       $scope.selectedLanguage = "en";
       $scope.translate();
+
+      $scope.getCursUsd = function () {
+        $http
+          .get("https://www.nbrb.by/api/exrates/rates/145")
+          .then(function (response) {
+            $scope.cursUsd = response.data.Cur_OfficialRate;
+          });
+      };
+      $scope.getCursUsd();
     }
   );
 
