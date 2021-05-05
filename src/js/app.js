@@ -133,9 +133,16 @@ angular
       };
 
       $scope.delete = function (item) {
-        servicePostsget.delete(item).then(function () {
-          $scope.items.splice($scope.items.indexOf(item), 1);
-        });
+        if ($scope.selectedLanguage == "en") {
+          $scope.del = confirm("Are you sure you want to delete this article?");
+        } else {
+          $scope.del = confirm("Вы уверены, что хотите удалить эту статью?");
+        }
+        if ($scope.del == true) {
+          servicePostsget.delete(item).then(function () {
+            $scope.items.splice($scope.items.indexOf(item), 1);
+          });
+        }
       };
 
       $scope.createItem = function () {
